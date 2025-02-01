@@ -1,0 +1,45 @@
+<main class="vn-container">
+    <header>
+        <h2>{{headerConf.title}}</h2>
+        <h5>{{headerConf.desc}}</h5>
+    </header>
+    <section>
+        <!-- Language Select Dropdown -->
+        <div class="language-select">
+            <label for="language">Select Language:</label>
+            <select id="language" [(ngModel)]="selectedLanguage" (change)="changeLanguage()">
+                <ng-container *ngFor="let lang of languageStrings | keyvalue">
+                    <option [value]="lang.key">{{selectedLanguageName(lang.key)}}</option>
+                </ng-container>             
+            </select>
+        </div>
+        <div class="vn-button-container">
+            <button class="vn-button vn-rounded" (click)="toggleListening()" [ngClass]="{ 'listening': isListening, 'stopped': !isListening }">
+                {{ voiceTriggertext }}
+            </button>
+        </div>
+        <textarea [(ngModel)]="note" class="vn-note" (blue)="saniitizeText(note)"></textarea>
+    </section>
+    <footer>
+        <button class="vn-button" [disabled]="!this.note.trim()" (click)="shareNote()">
+            {{languageStrings[selectedLanguage].shareText}}
+        </button>
+        <button class="vn-button" [disabled]="!this.note.trim()" (click)="clearNote()">
+            {{languageStrings[selectedLanguage].clearText}}
+        </button>
+        <button class="vn-button" [disabled]="!this.note.trim()" (click)="downloadNoteAsText()">
+            {{languageStrings[selectedLanguage].downloadText}}
+        </button>
+        <button class="vn-button" [disabled]="!this.note.trim()" (click)="copyToClipboard()">
+            {{languageStrings[selectedLanguage].copyText}}
+        </button>
+    </footer>
+</main>
+
+<div #toaster *ngFor="let toast of toasts" class="vn-toast" [ngClass]="toast.type" (click)="removeToast(toast)">
+    <div class="vn-toast-content">
+      <strong>{{ toast.title }}</strong>
+      <p>{{ toast.message }}</p>
+    </div>
+  </div>
+  
