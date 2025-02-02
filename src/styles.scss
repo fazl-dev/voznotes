@@ -41,6 +41,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     background-image: linear-gradient(#cacaca 2px, transparent 2px), linear-gradient(168deg, #cacaca 2px, transparent 2px), linear-gradient(#cacaca 1px, transparent 1px), linear-gradient(248deg, #cacaca 1px, #e5e5f7 1px);
 }
 
@@ -175,6 +176,7 @@ footer {
     .vn-container {
         padding: 20px;
         overflow-y: auto;
+        display: flow;
     }
 
     header h2 {
