@@ -10,7 +10,17 @@
   <title>Voznote`</title>
   
   <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self';
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  frame-ancestors 'none';
+">
 
   <!-- Secure favicon -->
   <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
