@@ -34,6 +34,11 @@
             {{languageStrings[selectedLanguage].copyText}}
         </button>
     </footer>
+    <footer class="vn-footer-info">
+        <p>Voice recognition powered by <a href="https://www.talater.com/" target="_blank">Annyang</a>.
+        Built with ❤️ using <a href="https://angular.io" target="_blank">Angular</a> & <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a></p>
+    </footer>
+      
 </main>
 
 <div #toaster *ngFor="let toast of toasts" class="vn-toast" [ngClass]="toast.type" (click)="removeToast(toast)">
@@ -41,5 +46,5 @@
       <strong>{{ toast.title }}</strong>
       <p>{{ toast.message }}</p>
     </div>
-  </div>
+</div>
   

@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, NgZone, SecurityContext, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
+import * as annyang from 'annyang';
+
 
 @Component({
   selector: 'voznote-home',
@@ -78,50 +80,71 @@ export class HomeComponent {
   selectedLanguage: string = 'en';
 
   constructor(private zone: NgZone, private purifyDOM: DomSanitizer) {
-    this.initializeSpeechRecognition();
+   // this.initializeSpeechRecognition();
   }
 
-  initializeSpeechRecognition() {
-    const { webkitSpeechRecognition, SpeechRecognition }: any = window as any;
-    this.recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-    this.recognition.lang = 'en-US';
-    this.recognition.interimResults = true;
-    this.recognition.continuous = true;
-    this.recognition.maxAlternatives = 1;
-  }
+  // initializeSpeechRecognition() {
+  //   const { webkitSpeechRecognition, SpeechRecognition }: any = window as any;
+  //   this.recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+  //   this.recognition.lang = 'en-US';
+  //   // this.recognition.interimResults = true;
+  //   this.recognition.continuous = true;
+  //   this.recognition.maxAlternatives = 1;
+  // }
 
 
   startListening() {
-    this.recognition.start();
-    this.showToast('info', 'Listening Started!', 'Info');
-    this.isProcessing = true;
-    this.recognition.onresult = (event: any) => {
-      Array.from(event.results).forEach((result: any) => {
-        console.log(result[0].transcript);
-        if (result.isFinal) {
-          this.isProcessing = false;
-          this.zone.run(() => {this.note += result[0].transcript.trim() + ' '
+    if (annyang) {
+      this.isListening = true;
+      this.isProcessing = true;
+      this.showToast('info', 'Voznote` Listening Started!', 'Info');
+
+      // Command setup
+      const commands = {
+        '*text': (text: string) => {
+          this.zone.run(() => {
+            this.note += text.trim() + ' ';
             this.saniitizeText(this.note);
-          })
+            this.isProcessing = false;
+          });
         }
+      };
+
+      annyang.addCommands(commands);
+
+      annyang.addCallback('error', (error: any) => {
+        this.isListening = false;
+        this.isProcessing = false;
+          // Try to restart listening on error
+      if (error.error === 'network' || error.error === 'no-speech') {
+        console.log('Attempting to restart listening...');
+        this.startListening(); // Attempt to restart
+      } else {
+        this.showToast('error', 'Error while listening to voice!', 'Error');
+        console.error('Speech recognition error:', error);
+      }
+
       });
-    };
-    this.recognition.onerror = (event: any) => {
-      this.isListening = false;
-      this.isProcessing = false;
-      this.showToast('error', 'Error while listening voice!', 'Error');
-      console.error('Speech recognition error:', event.error);
-    };
-    this.recognition.onend = () => {
-      this.isProcessing = false;
-      this.isListening = false;
-    };
+
+      annyang.addCallback('end', () => {
+        this.isListening = false;
+        this.isProcessing = false;
+        this.showToast('info', 'Voznote` listening ended due to inactivity!', 'Info');
+      });
+
+      annyang.start({ autoRestart: true, continuous: true });
+    } else {
+      this.showToast('error', 'Voznote` listening not supported!', 'Error');
+    }
   }
 
+
   stopListening() {
-    this.showToast('info', 'Listening Stopped!', 'Info');
-    this.isListening = false;
-    this.recognition.stop();
+    if (annyang) {
+      this.showToast('info', 'Voznote` Listening Stopped!', 'Info');
+      annyang.abort();  // Stops recognition immediately
+      this.isListening = false;
+    }
   }
 
   toggleListening() {
@@ -186,7 +209,9 @@ export class HomeComponent {
   changeLanguage() {
     this.showToast('warning', 'Listening stopped!', 'Warning');
     this.stopListening();
-    this.recognition.lang = this.selectedLanguage;
+    // this.recognition.lang = this.selectedLanguage;
+    annyang.setLanguage(this.selectedLanguage);
+
     this.showToast('info', 'Language changed to ' + this.languageStrings[this.selectedLanguage].name, 'Info');
   }
 
@@ -213,7 +238,7 @@ export class HomeComponent {
     text = this.purifyDOM.sanitize(SecurityContext.HTML, text) || '';
     text = this.purifyDOM.sanitize(SecurityContext.URL, text) || '';
     text = this.purifyDOM.sanitize(SecurityContext.STYLE, text) || '';
-    text = this.purifyDOM.sanitize(SecurityContext.SCRIPT, text) || '';
+    // text = this.purifyDOM.sanitize(SecurityContext.SCRIPT, text) || '';
     return text;
   }
 }
