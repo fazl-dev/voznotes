@@ -1,7 +1,7 @@
 
 # Voznote`
 
-**Voznote`** is a simple voice-to-note web application that allows users to convert their speech into text notes. Built with Angular and powered by **Annyang** for voice recognition, Voznote` uses basic web APIs for its functionality.
+**Voznote** is a simple voice-to-note web application that allows users to convert their speech into text notes. Built with Angular and powered by **Annyang** for voice recognition, Voznote` uses basic web APIs for its functionality.
 
 ## 🚀 Features
 
